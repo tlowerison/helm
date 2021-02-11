@@ -1,0 +1,23 @@
+{{$name := .Values.global.name}}
+{{required "global.name is required" $name}}
+{{$env := .Values.global.environment}}
+{{required "global.environment is required" $env}}
+{{$selectors := dict "name" $name "chartName" .Chart.Name "env" $env "tier" .Values.tier}}
+{{$labels := merge $selectors (dict "instance" .Release.Name "version" .Chart.Version "releaseNamespace" .Release.Namespace)}}
+{{$containers := .Values.template.containers -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{include "name" $selectors}}
+  labels: {{include "labels" $labels | nindent 4}}
+spec:
+  type: ClusterIP
+  selector: {{include "selectors" $selectors | nindent 4}}
+  ports: {{range $ctrName, $ctr := $containers}}{{range $portName, $port := $ctr.ports}}{{if or (not (hasKey $port "servicePort")) $port.servicePort}}
+  - name: {{$portName}}
+    port: {{if hasKey $port "servicePort"}}{{$port.servicePort}}{{else}}{{$port.port}}{{end}}
+    targetPort: {{$port.port}}
+    {{if hasKey $port "protocol"}}protocol: {{$port.protocol}}{{end}}
+  {{- end}}
+{{end}}{{end}}

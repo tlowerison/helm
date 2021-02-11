@@ -1,0 +1,30 @@
+{{$name := .Values.global.name}}
+{{required "global.name is required" $name}}
+{{$env := .Values.global.environment}}
+{{required "global.environment is required" $env}}
+{{$selectors := dict "name" $name "chartName" .Chart.Name "env" $env "tier" .Values.tier}}
+{{$labels := merge $selectors (dict "instance" .Release.Name "version" .Chart.Version "releaseNamespace" .Release.Namespace)}}
+{{$template := .Values.template}}
+{{required "template is required" $template}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{include "name" $selectors}}
+  labels: {{include "labels" $labels | nindent 4}}
+spec:
+  replicas: {{.Values.replicas}}
+  selector:
+    matchLabels: {{include "selectors" $selectors | nindent 6}}
+  include:
+    metadata:
+      labels: {{include "selectors" $selectors | nindent 8}}
+    spec:
+      {{- if $template.imagePullSecrets}}{{if gt (len $template.imagePullSecrets) 0}}
+      imagePullSecrets: {{include "imagePullSecrets" (dict "containers" $template.imagePullSecrets "Values" .Values) | nindent 8}}{{end}}{{end}}
+      {{- if $template.initContainers}}{{if gt (len $template.initContainers) 0}}
+      initContainers: {{include "initContainers" (dict "containers" $template.initContainers "Values" .Values) | nindent 8}}{{end}}{{end}}
+      {{- if $template.containers}}{{if gt (len $template.containers) 0}}
+      containers: {{include "containers" (dict "containers" $template.containers "Values" .Values) | nindent 8}}{{end}}{{end}}
+      {{- if $template.volumes}}{{if gt (len $template.volumes) 0}}
+      volumes: {{include "volumes" (dict "containers" $template.volumes "Values" .Values) | nindent 8}}{{end}}{{end}}

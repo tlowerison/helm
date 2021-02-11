@@ -1,0 +1,8 @@
+apiVersion: v2
+name: standard-deployment
+version: 1.0.0
+maintainers:
+- name: Trey Lowerison
+  email: tlowerison@tuta.io
+
+dependencies:

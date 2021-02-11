@@ -1,0 +1,10 @@
+name: #<name of the component>
+environment: #<environment of the component {local,dev,sandbox,staging,production}>
+
+standard-deployment:
+  replicas: 1
+  template:
+    imagePullSecrets: []
+    initContainers: []
+    containers: []
+    volumes: []
