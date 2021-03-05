@@ -1,0 +1,14 @@
+name:
+# component:
+replicas: 1
+schedule:
+suspend: false
+concurrencyPolicy: Allow
+# startingDeadlineSeconds:
+# successfulJobsHistoryLimit:
+# failedJobsHistoryLimit:
+template:
+  restartPolicy: OnFailure
+  imagePullSecrets: []
+  initContainers: []
+  containers: []

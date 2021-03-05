@@ -1,0 +1,24 @@
+{{$all := dict "Chart" .Chart "Release" .Release "Values" .Values}}
+{{$template := .Values.template}}
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{include "name" $all}}
+  labels: {{include "labels" $all | nindent 4}}
+spec:
+  schedule: "{{.Values.schedule}}"
+  concurrencyPolicy: {{.Values.concurrencyPolicy}}
+  suspend: {{.Values.suspend}}
+  {{- if hasKey .Values "startingDeadlineSeconds"}}
+  startingDeadlineSeconds: {{.Values.startingDeadlineSeconds}}{{end}}
+  {{- if hasKey .Values "successfulJobsHistoryLimit"}}
+  successfulJobsHistoryLimit: {{.Values.successfulJobsHistoryLimit}}{{end}}
+  {{- if hasKey .Values "failedJobsHistoryLimit"}}
+  failedJobsHistoryLimit: {{.Values.failedJobsHistoryLimit}}{{end}}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels: {{include "labels" $all | nindent 12}}
+        spec: {{include "basePod" (dict "Values" .Values "template" $template) | nindent 10 -}}

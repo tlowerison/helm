@@ -13,9 +13,4 @@ spec:
   template:
     metadata:
       labels: {{include "labels" $all | nindent 8}}
-    spec: {{- if hasKey $template "imagePullSecrets"}}{{if (lt 0 (len $template.imagePullSecrets))}}
-      imagePullSecrets: {{include "imagePullSecrets" $template.imagePullSecrets | nindent 6}}{{end}}{{end}}
-      {{- if hasKey $template "initContainers"}}{{if (lt 0 (len $template.initContainers))}}
-      initContainers: {{include "containers" (dict "containers" $template.initContainers "Values" .Values) | nindent 6}}{{end}}{{end}}
-      {{- if hasKey $template "containers"}}{{if (lt 0 (len $template.containers))}}
-      containers: {{include "containers" (dict "containers" $template.containers "Values" .Values) | nindent 6}}{{end}}{{end}}
+    spec: {{include "basePod" (dict "Values" .Values "template" $template) | nindent 6 -}}
