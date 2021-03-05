@@ -1,10 +1,16 @@
-name: #<name of the component>
-environment: #<environment of the component {local,dev,sandbox,staging,production}>
-
-standard-deployment:
-  replicas: 1
-  template:
-    imagePullSecrets: []
-    initContainers: []
-    containers: []
-    volumes: []
+# name:
+# component:
+replicas: 1
+# template:
+#   imagePullSecrets: []
+#   initContainers: []
+#   containers:
+#   - image:
+#       repo: tlowerison
+#       name: imagename
+#       tag: latest
+#     ports:
+#     - name: https
+#       container: 8080
+#       service: 443
+#   volumes: []

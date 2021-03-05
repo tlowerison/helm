@@ -1,23 +1,27 @@
-{{$name := .Values.global.name}}
-{{required "global.name is required" $name}}
-{{$env := .Values.global.environment}}
-{{required "global.environment is required" $env}}
-{{$selectors := dict "name" $name "chartName" .Chart.Name "env" $env "tier" .Values.tier}}
-{{$labels := merge $selectors (dict "instance" .Release.Name "version" .Chart.Version "releaseNamespace" .Release.Namespace)}}
-{{$containers := .Values.template.containers -}}
+{{$all := dict "Chart" .Chart "Release" .Release "Values" .Values}}
+{{$template := .Values.template}}
+{{$portPairs := list}}
+{{- range $ctrName, $ctr := $template.containers -}}
+  {{- range $portName, $port := $ctr.ports -}}
+    {{$portPairs = append $portPairs (dict "name" $portName "port" $port)}}
+  {{- end -}}
+{{- end -}}
+{{if (lt 0 (len $portPairs))}}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{include "name" $selectors}}
-  labels: {{include "labels" $labels | nindent 4}}
+  name: {{include "name" $all}}
+  labels: {{include "labels" $all | nindent 4}}
 spec:
   type: ClusterIP
-  selector: {{include "selectors" $selectors | nindent 4}}
-  ports: {{range $ctrName, $ctr := $containers}}{{range $portName, $port := $ctr.ports}}{{if or (not (hasKey $port "servicePort")) $port.servicePort}}
-  - name: {{$portName}}
-    port: {{if hasKey $port "servicePort"}}{{$port.servicePort}}{{else}}{{$port.port}}{{end}}
-    targetPort: {{$port.port}}
-    {{if hasKey $port "protocol"}}protocol: {{$port.protocol}}{{end}}
-  {{- end}}
-{{end}}{{end}}
+  selector: {{include "selectors" $all | nindent 4}}
+  ports: {{range $portPair := $portPairs -}}
+    {{- $portName := $portPair.name}}
+    {{- $port := $portPair.port}}
+  - name: {{if hasKey $port "name"}}{{$port.name}}{{else}}{{"port-"}}{{$portName}}{{end}}
+    port: {{if hasKey $port "service"}}{{$port.service}}{{else}}{{$port.container}}{{end}}
+    targetPort: {{$port.container}}
+    {{- if hasKey $port "protocol"}}
+    protocol: {{$port.protocol}}{{end}}
+{{- end}}{{end}}
