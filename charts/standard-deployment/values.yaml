@@ -5,12 +5,12 @@ template:
   restartPolicy: Always
   imagePullSecrets: []
   initContainers: []
-#   containers:
-#   - image:
-#       repo: tlowerison
-#       name: imagename
-#       tag: latest
-#     ports:
-#     - name: https
-#       container: 8080
-#       service: 443
+  containers: []
+  # - image:
+  #     repo: tlowerison
+  #     name: imagename
+  #     tag: latest
+  #   ports:
+  #   - name: https
+  #     container: 8080
+  #     service: 443

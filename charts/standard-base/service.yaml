@@ -1,7 +1,5 @@
-{{$all := dict "Chart" .Chart "Release" .Release "Values" .Values}}
-{{$template := .Values.template}}
 {{$portPairs := list}}
-{{- range $ctrName, $ctr := $template.containers -}}
+{{- range $ctrName, $ctr := .Values.template.containers -}}
   {{- range $portName, $port := $ctr.ports -}}
     {{$portPairs = append $portPairs (dict "name" $portName "port" $port)}}
   {{- end -}}
@@ -11,11 +9,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{include "name" $all}}
-  labels: {{include "labels" $all | nindent 4}}
+  name: {{include "standard-base.name" $}}
+  labels: {{include "standard-base.labels" $ | nindent 4}}
 spec:
   type: ClusterIP
-  selector: {{include "selectors" $all | nindent 4}}
+  selector: {{include "standard-base.selectors" $ | nindent 4}}
   ports: {{range $portPair := $portPairs -}}
     {{- $portName := $portPair.name}}
     {{- $port := $portPair.port}}

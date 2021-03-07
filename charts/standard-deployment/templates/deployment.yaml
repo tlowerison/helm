@@ -1,16 +1,14 @@
-{{$all := dict "Chart" .Chart "Release" .Release "Values" .Values}}
-{{$template := .Values.template}}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{include "name" $all}}
-  labels: {{include "labels" $all | nindent 4}}
+  name: {{include "standard-base.name" $}}
+  labels: {{include "standard-base.labels" $ | nindent 4}}
 spec:
   replicas: {{.Values.replicas}}
   selector:
-    matchLabels: {{include "selectors" $all | nindent 6}}
+    matchLabels: {{include "standard-base.selectors" $ | nindent 6}}
   template:
     metadata:
-      labels: {{include "labels" $all | nindent 8}}
-    spec: {{include "basePod" (dict "Values" .Values "template" $template) | nindent 6 -}}
+      labels: {{include "standard-base.labels" $ | nindent 8}}
+    spec: {{include "standard-base.pod" $ | nindent 6 -}}

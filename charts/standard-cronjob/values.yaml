@@ -1,6 +1,5 @@
 name:
 # component:
-replicas: 1
 schedule:
 suspend: false
 concurrencyPolicy: Allow
@@ -11,4 +10,12 @@ template:
   restartPolicy: OnFailure
   imagePullSecrets: []
   initContainers: []
-  containers: []
+  containers:
+  - image:
+      repo: tlowerison
+      name: imagename
+      tag: latest
+    ports:
+    - name: https
+      container: 8080
+      service: 443
