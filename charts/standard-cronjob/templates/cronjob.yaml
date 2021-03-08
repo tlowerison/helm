@@ -2,12 +2,12 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{include "standard-base.name" $}}
-  labels: {{include "standard-base.labels" $ | nindent 4}}
-spec: {{ include "standard-base.yaml" (omit .Values "component" "global" "name" "template") | nindent 2 }}
+  name: {{include "tlowerison/standard-base.name" $}}
+  labels: {{include "tlowerison/standard-base.labels" $ | nindent 4}}
+spec: {{ include "tlowerison/standard-base.yaml" (omit .Values "component" "global" "name" "template") | nindent 2 }}
   jobTemplate:
     spec:
       template:
         metadata:
-          labels: {{include "standard-base.labels" $ | nindent 12}}
-        spec: {{include "standard-base.pod" $ | nindent 10 -}}
+          labels: {{include "tlowerison/standard-base.labels" $ | nindent 12}}
+        spec: {{include "tlowerison/standard-base.pod" $ | nindent 10 -}}
