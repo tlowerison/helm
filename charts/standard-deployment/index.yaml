@@ -2,13 +2,13 @@ apiVersion: v1
 entries:
   standard-deployment:
   - apiVersion: v1
-    created: "2021-03-07T19:59:44.257359-08:00"
-    digest: 57555d365ad688498d95ad60a391fb2aa11c14c8faa8f57ae0fee6e0d3c0d74f
+    created: "2021-03-08T03:34:00.98663-08:00"
+    digest: 9d97a8ff50c066abd4ba6bd75be8db605bfd1ef43e0d5246ae7569d5a40990ce
     maintainers:
     - email: tlowerison@tuta.io
       name: Trey Lowerison
     name: standard-deployment
     urls:
-    - https://github.com/tlowerison/helm/releases/download/v1.0.0/standard-deployment-1.0.0.tgz
+    - https://tlowerison.com/helm/charts/standard-deployment/v1.0.0
     version: 1.0.0
-generated: "2021-03-07T19:59:44.256947-08:00"
+generated: "2021-03-08T03:34:00.986149-08:00"
