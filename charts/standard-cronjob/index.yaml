@@ -2,13 +2,13 @@ apiVersion: v1
 entries:
   standard-cronjob:
   - apiVersion: v1
-    created: "2021-03-07T19:36:35.469115-08:00"
-    digest: 12c1bd1ae7e12c47472221c7723d41076c2e0c0ca4e65255e6c810aaadd76762
+    created: "2021-03-07T20:00:10.757485-08:00"
+    digest: 582ab832afb4a3c56d99a6df6ba6e2aedc613fe4e5902fd9b235a04992c254e9
     maintainers:
     - email: tlowerison@tuta.io
       name: Trey Lowerison
     name: standard-cronjob
     urls:
-    - https://github.com/tlowerison/helm/releases/download/1.0.0/standard-cronjob-1.0.0.tgz
+    - https://github.com/tlowerison/helm/releases/download/v1.0.0/standard-cronjob-1.0.0.tgz
     version: 1.0.0
-generated: "2021-03-07T19:36:35.46866-08:00"
+generated: "2021-03-07T20:00:10.757036-08:00"

@@ -1,2 +1,2 @@
-**/*.tgz
-!releases/*.tgz
+*.DS_STORE
+*.tgz
