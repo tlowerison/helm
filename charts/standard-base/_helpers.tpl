@@ -46,7 +46,7 @@ app.kubernetes.io/component: {{ .Values.component }}{{ end }}
 {{ define "tlowerison/standard-base.secrets" }}{{ range $_, $name := .container.secrets }}- name: {{ $name }}
   valueFrom:
     secretKeyRef:
-      name: {{ include "tlowerison/standard-base.secretName" }}
+      name: {{ include "tlowerison/standard-base.name" }}
       key: {{ $name }}
 {{- end }}{{ end }}
 
@@ -66,15 +66,15 @@ app.kubernetes.io/component: {{ .Values.component }}{{ end }}
 {{ define "tlowerison/standard-base.containerPorts" }}
 {{- range $name, $port := . -}}
 - name: {{ if hasKey $port "name" }}{{ $port.name }}{{ else }}{{ "port-" }}{{ $name }}{{ end }}
-  containerPort: {{ $port.container }}{{ if hasKey $port "protocol" }}
+  containerPort: {{ $port.container }}{{ if hasKey $port "host" }}
+  hostPort: {{ $port.host }}{{ end }}{{ if hasKey $port "protocol" }}
   protocol: {{ $port.protocol }}{{ end }}
 {{- end }}{{ end }}
 
 {{/* containers helper */}}
 {{ define "tlowerison/standard-base.containers" }}
 {{- range $i, $ctr := .containers -}}
-{{- $tpl := (deepCopy (dict "container" $ctr) | merge $) -}}
-- name: {{ if hasKey $ctr "name" }}{{ $ctr.name }}{{ else }}{{ "container-" }}{{ $i }}{{ end }}
+{{- $tpl := (deepCopy (dict "container" $ctr) | merge $) }}- name: {{ if hasKey $ctr "name" }}{{ $ctr.name }}{{ else }}{{ "container-" }}{{ $i }}{{ end }}
   image: {{ include "tlowerison/standard-base.image" $ctr.image }}
   imagePullPolicy: {{ if hasKey $ctr "imagePullPolicy" }}{{ $ctr.imagePullPolicy }}{{ else }}Always{{ end }}
   {{- if hasKey $ctr "ports" }}
@@ -84,8 +84,8 @@ app.kubernetes.io/component: {{ .Values.component }}{{ end }}
   {{- if hasKey $ctr "secrets" }}{{ include "tlowerison/standard-base.secrets" $tpl}}{{ end }}
   {{- if hasKey $ctr "externalSecrets" }}{{ include "tlowerison/standard-base.externalSecrets" $tpl}}{{ end }}{{ end -}}
   {{- $rest := include "tlowerison/standard-base.yaml" (omit $ctr "name" "image" "imagePullPolicy" "ports" "env" "secrets" "externalSecrets") | nindent 2 -}}
-  {{- if not (eq "" (trim $rest)) }}{{ regexReplaceAll "( |\n)*$" $rest "" }}{{ end }}
-{{- end }}{{ end }}
+  {{- if not (eq "" (trim $rest)) }}{{ regexReplaceAll "( |\n)*$" $rest "" }}
+{{ end }}{{ end }}{{ end }}
 
 {{/* imagePullSecrets helper */}}
 {{ define "tlowerison/standard-base.imagePullSecrets" }}
@@ -100,14 +100,13 @@ app.kubernetes.io/component: {{ .Values.component }}{{ end }}
 imagePullSecrets: {{ include "tlowerison/standard-base.imagePullSecrets" $template.imagePullSecrets | nindent 0 }}
 {{ end }}{{ end }}
 {{- if hasKey $template "initContainers" }}{{ if (lt 0 (len $template.initContainers)) -}}
-initContainers: {{ include "tlowerison/standard-base.containers" $template.initContainers | nindent 0 }}
+initContainers: {{ include "tlowerison/standard-base.containers" (deepCopy (dict "containers" $template.initContainers) | merge (deepCopy $)) | nindent 0 }}
 {{ end }}{{ end }}
 {{- if hasKey $template "containers" }}{{ if (lt 0 (len $template.containers)) -}}
-containers: {{ include "tlowerison/standard-base.containers" (deepCopy (dict "containers" $template.containers) | merge $) | nindent 0 }}{{ end }}{{ end }}{{ end }}
+containers: {{ include "tlowerison/standard-base.containers" (deepCopy (dict "containers" $template.containers) | merge (deepCopy $)) | nindent 0 }}{{ end }}{{ end }}{{ end }}
 
 {{ define "tlowerison/standard-base.pod" -}}
 {{- $template := .Values.template -}}
 {{- $basePod := include "tlowerison/standard-base.basePod" $ -}}
 {{- $rest := include "tlowerison/standard-base.yaml" (omit $template "imagePullSecrets" "initContainers" "containers") -}}
-{{ $basePod }}{{ if not (eq "" (trim $basePod)) }}
-{{ end }}{{ if not (eq "" (trim $rest)) }}{{ regexReplaceAll "( |\n)*$" $rest "" }}{{ end }}{{end}}
+{{ $basePod }}{{ if not (eq "" (trim $basePod)) }}{{ end }}{{ if not (eq "" (trim $rest)) }}{{ regexReplaceAll "( |\n)*$" $rest "" }}{{ end }}{{end}}
