@@ -1,7 +1,7 @@
 name:
 # component:
 replicas: 1
-# labels:
+# annotations:
 #   prometheus.io/scrape: '"true"'
 #   prometheus.io/path: /metrics
 #   prometheus.io/port: '"8080"'
