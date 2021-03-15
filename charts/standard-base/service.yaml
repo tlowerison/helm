@@ -13,7 +13,7 @@ metadata:
   labels: {{include "tlowerison/standard-base.labels" $ | nindent 4}}
 spec:
   type: ClusterIP
-  selector: {{include "tlowerison/standard-base.selectors" $ | nindent 4}}
+  selector: {{include "tlowerison/standard-base.matchLabels" $ | nindent 4}}
   ports: {{range $portPair := $portPairs -}}
     {{- $portName := $portPair.name}}
     {{- $port := $portPair.port}}

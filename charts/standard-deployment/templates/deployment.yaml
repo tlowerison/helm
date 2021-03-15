@@ -2,13 +2,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{include "tlowerison/standard-base.name" $}}
-  labels: {{include "tlowerison/standard-base.labels" $ | nindent 4}}
+  name: {{ include "tlowerison/standard-base.name" $ }}
+  labels: {{ include "tlowerison/standard-base.labels" $ | nindent 4 }}
 spec:
-  replicas: {{.Values.replicas}}
-  selector:
-    matchLabels: {{include "tlowerison/standard-base.selectors" $ | nindent 6}}
+  replicas: {{ .Values.replicas }}
+  selector: {{ include "tlowerison/standard-base.selector" $ | nindent 4 }}
   template:
     metadata:
-      labels: {{include "tlowerison/standard-base.labels" $ | nindent 8}}
-    spec: {{include "tlowerison/standard-base.pod" $ | nindent 6 -}}
+      labels: {{ include "tlowerison/standard-base.labels" $ | nindent 8 }}
+    spec: {{ include "tlowerison/standard-base.pod" $ | nindent 6 -}}
