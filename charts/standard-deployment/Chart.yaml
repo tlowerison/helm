@@ -6,3 +6,6 @@ maintainers:
   email: tlowerison@tuta.io
 
 dependencies:
+- name: standard-base
+  version: 1.0.0
+  repository: https://tlowerison.com/helm/charts

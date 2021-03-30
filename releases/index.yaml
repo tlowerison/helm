@@ -1,0 +1,36 @@
+apiVersion: v1
+entries:
+  standard-base:
+  - apiVersion: v1
+    created: "2021-03-30T10:59:34.447226-07:00"
+    digest: 99ede7617b6593555994b85f78b512c0d332f958b6b284aa398dc3e05235bcd2
+    maintainers:
+    - email: tlowerison@tuta.io
+      name: Trey Lowerison
+    name: standard-base
+    urls:
+    - standard-base-1.0.0.tgz
+    version: 1.0.0
+  standard-cronjob:
+  - apiVersion: v1
+    created: "2021-03-30T10:59:34.447648-07:00"
+    digest: 32e35b75aa4d49a2f5c80dc1e443363cc92942714b3c1dce95578b811abae34f
+    maintainers:
+    - email: tlowerison@tuta.io
+      name: Trey Lowerison
+    name: standard-cronjob
+    urls:
+    - standard-cronjob-1.0.0.tgz
+    version: 1.0.0
+  standard-deployment:
+  - apiVersion: v1
+    created: "2021-03-30T10:59:34.447977-07:00"
+    digest: b3e355930e9dc4c9e66954d0cc8e9990fe2e55323eb6e3fcc7dad44f6a8a9a71
+    maintainers:
+    - email: tlowerison@tuta.io
+      name: Trey Lowerison
+    name: standard-deployment
+    urls:
+    - standard-deployment-1.0.0.tgz
+    version: 1.0.0
+generated: "2021-03-30T10:59:34.446859-07:00"
