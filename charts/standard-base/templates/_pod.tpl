@@ -2,7 +2,7 @@
 {{ define "tlowerison/standard-base.pod" -}}
 metadata:
   labels: {{ include "tlowerison/standard-base.labels" $ | nindent 4 }}{{ if hasKey .Values "annotations" }}
-  annotations: {{ include "tlowerison/standard-base.yaml" .Values.annotations | nindent 4 }}{{ end }}
+  annotations: {{ include "tlowerison/standard-base.fmt-yaml" (dict "nindent" 4 "data" .Values.annotations) }}{{ end }}
 spec: {{ include "tlowerison/standard-base.pod.spec" $ | nindent 2 }}{{ end }}
 
 {{/* pod.spec helper */}}
