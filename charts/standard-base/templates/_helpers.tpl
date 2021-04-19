@@ -1,22 +1,28 @@
+{{/* tpl helper */}}
 {{ define "tlowerison/standard-base.tpl" }}{{ if (regexMatch "^\\{\\{.*\\}\\}$" .tpl) }}{{ tpl .tpl $ }}{{ else }}{{ .tpl }}{{ end }}{{ end }}
 
+{{/* yaml helper */}}
 {{ define "tlowerison/standard-base.yaml" }}{{ if kindIs "map" . }}{{ include "tlowerison/standard-base.map" . }}{{ else if kindIs "slice" . }}{{ include "tlowerison/standard-base.slice" . }}{{ else }}{{ toString . }}{{ end }}{{ end }}
 
+{{/* baseMap helper */}}
 {{ define "tlowerison/standard-base.baseMap" }}{{ range $key, $value := . }}{{ if not (kindIs "invalid" $value) }}{{ $key }}: {{ if kindIs "map" $value }}{{ "\n  " }}{{ include "tlowerison/standard-base.map" $value | nindent 2 | trim }}
 {{ else if kindIs "slice" $value }}{{ include "tlowerison/standard-base.slice" $value }}
 {{ else }}{{ toString $value }}
 {{ end }}{{ end }}{{ end }}{{ end }}
 
+{{/* map helper */}}
 {{ define "tlowerison/standard-base.map" }}{{ $baseMap := include "tlowerison/standard-base.baseMap" . }}{{ trimSuffix "\n" $baseMap }}{{ end }}
 
+{{/* slice helper */}}
 {{ define "tlowerison/standard-base.slice" }}{{ range $key, $value := . }}
 - {{ include "tlowerison/standard-base.yaml" $value | nindent 2 | trim }}{{ end }}{{ end }}
 
+{{/* name helper */}}
 {{ define "tlowerison/standard-base.name" -}}
 {{ if hasKey .Values "name" }}{{ .Values.name }}{{ else }}{{ .Values.global.name }}{{ end }}
 {{- end }}
 
-{{/* labels helper, for injecting labels into helm managed resources */}}
+{{/* labels helper */}}
 {{ define "tlowerison/standard-base.labels" -}}
 app.kubernetes.io/name: {{ include "tlowerison/standard-base.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
@@ -28,7 +34,7 @@ meta.helm.sh/release-namespace: {{ .Release.Namespace }}{{ if hasKey .Values "la
 {{ include "tlowerison/standard-base.yaml" (dict "Values" .Values "key" "labels") }}
 {{- end }}{{ end }}
 
-{{/* matchLabels / service.selector helper */}}
+{{/* matchLabels helper */}}
 {{ define "tlowerison/standard-base.matchLabels" -}}
 app.kubernetes.io/name: {{ include "tlowerison/standard-base.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
@@ -36,13 +42,14 @@ app.kubernetes.io/version: {{ .Chart.Version }}{{ if hasKey .Values "component" 
 app.kubernetes.io/component: {{ .Values.component }}{{ end }}{{ if hasKey .Values "selector" }}{{ if hasKey .Values.selector "matchLabels" }}
 {{ include "tlowerison/standard-base.yaml" .Values.selector.matchLabels }}{{ end }}{{ end }}{{ end }}
 
-{{/* selections helper, for injecting selectors into helm managed resouces */}}
+{{/* selector helper */}}
 {{ define "tlowerison/standard-base.selector" -}}
 matchLabels:
 {{ include "tlowerison/standard-base.matchLabels" . | indent 2 }}{{ if hasKey .Values "selector" }}
 {{ include "tlowerison/standard-base.yaml" (omit .Values.selector "matchLabels") }}{{ end }}
 {{- end }}
 
+{{/* image helper */}}
 {{ define "tlowerison/standard-base.image" -}}
 {{ if hasKey . "repo" }}{{ .repo }}{{ "/" }}{{ end }}{{ .name }}{{ ":" }}{{ .tag }}
 {{- end }}
@@ -54,7 +61,7 @@ matchLabels:
   - name: {{ $name }}
     value: {{ $value }}{{ end }}{{ end }}
 
-{{/* tpl env helper */}}
+{{/* secrets helper */}}
 {{ define "tlowerison/standard-base.secrets" }}{{ range $newKey, $secret := .container.secrets -}}
 {{- $name := (include "tlowerison/standard-base.tpl" (deepCopy $ | merge (dict "tpl" $secret.from))) -}}
 {{- $key := (include "tlowerison/standard-base.tpl" (deepCopy $ | merge (dict "tpl" $secret.key)) | quote) }}
@@ -68,7 +75,7 @@ matchLabels:
 {{ define "tlowerison/standard-base.args" }}{{ range . }}- {{ . | quote }}
 {{- end }}{{ end }}
 
-{{/* container ports helper */}}
+{{/* containerPorts helper */}}
 {{ define "tlowerison/standard-base.containerPorts" }}
 {{- range $name, $port := . -}}
 - name: {{ if hasKey $port "name" }}{{ $port.name }}{{ else }}{{ "port-" }}{{ $name }}{{ end }}
@@ -96,7 +103,16 @@ matchLabels:
 - name: {{ . }}
 {{- end -}}{{- end }}
 
-{{/* base pod spec helper */}}
+{{/* pod helper */}}
+{{ define "tlowerison/standard-base.pod" -}}
+{{- $template := .Values.template -}}
+{{- $base := regexReplaceAll "^( |\n)*" (include "tlowerison/standard-base.basePod" $) "" -}}
+{{- $rest := regexReplaceAll "( |\n)*$" (include "tlowerison/standard-base.yaml" (omit $template "imagePullSecrets" "initContainers" "containers")) "" }}
+{{- if not (eq "" (trim $base)) }}{{ $base }}
+{{ end }}{{ if not (eq "" (trim $rest)) }}{{ $rest }}
+{{ end }}{{ end }}
+
+{{/* basePod helper */}}
 {{ define "tlowerison/standard-base.basePod" -}}
 {{- $template := .Values.template -}}
 {{- if hasKey $template "imagePullSecrets" }}{{ if (lt 0 (len $template.imagePullSecrets)) -}}
@@ -105,11 +121,3 @@ imagePullSecrets: {{ include "tlowerison/standard-base.imagePullSecrets" $templa
 initContainers: {{ include "tlowerison/standard-base.containers" (deepCopy $ | merge (dict "containers" $template.initContainers)) }}{{ end }}{{ end }}
 {{- if hasKey $template "containers" }}{{ if (lt 0 (len $template.containers)) }}
 containers: {{ include "tlowerison/standard-base.containers" (deepCopy $ | merge (dict "containers" $template.containers)) }}{{ end }}{{ end }}{{ end }}
-
-{{ define "tlowerison/standard-base.pod" -}}
-{{- $template := .Values.template -}}
-{{- $base := regexReplaceAll "^( |\n)*" (include "tlowerison/standard-base.basePod" $) "" -}}
-{{- $rest := regexReplaceAll "( |\n)*$" (include "tlowerison/standard-base.yaml" (omit $template "imagePullSecrets" "initContainers" "containers")) "" }}
-{{- if not (eq "" (trim $base)) }}{{ $base }}
-{{ end }}{{ if not (eq "" (trim $rest)) }}{{ $rest }}
-{{ end }}{{ end }}
