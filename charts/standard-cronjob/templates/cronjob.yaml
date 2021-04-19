@@ -8,8 +8,4 @@ metadata:
 spec: {{ include "tlowerison/standard-base.yaml" (omit .Values "component" "global" "name" "template") | nindent 2 }}
   jobTemplate:
     spec:
-      template:
-        metadata:
-          labels: {{include "tlowerison/standard-base.labels" $ | nindent 12}}{{ if hasKey .Values "annotations" }}
-          annotations: {{ include "tlowerison/standard-base.yaml" .Values.annotations | nindent 12 }}{{ end }}
-        spec: {{include "tlowerison/standard-base.pod" $ | nindent 10 -}}
+      template: {{ include "tlowerison/standard-base.pod" $ | nindent 8 }}

@@ -8,8 +8,4 @@ metadata:
 spec:
   replicas: {{ .Values.replicas }}
   selector: {{ include "tlowerison/standard-base.selector" $ | nindent 4 }}
-  template:
-    metadata:
-      labels: {{ include "tlowerison/standard-base.labels" $ | nindent 8 }}{{ if hasKey .Values "annotations" }}
-      annotations: {{ include "tlowerison/standard-base.yaml" .Values.annotations | nindent 8 }}{{ end }}
-    spec: {{ include "tlowerison/standard-base.pod" $ | nindent 6 -}}
+  template: {{ include "tlowerison/standard-base.pod" $ | nindent 4 }}
