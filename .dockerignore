@@ -1,0 +1,5 @@
+*
+!nginx/
+!releases/
+/nginx/nginx.conf
+/nginx/*.log
